@@ -1,0 +1,395 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: لمسة رموز - Marketing platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: catalog
+    description: Services and plans catalog
+  - name: leads
+    description: Customer subscription leads
+  - name: contact
+    description: Contact and support messages
+  - name: stats
+    description: Platform stats
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /services:
+    get:
+      operationId: listServices
+      tags: [catalog]
+      summary: List all marketing services (AI agents)
+      responses:
+        "200":
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+
+  /plans:
+    get:
+      operationId: listPlans
+      tags: [catalog]
+      summary: List subscription plans
+      responses:
+        "200":
+          description: List of plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Plan"
+
+  /testimonials:
+    get:
+      operationId: listTestimonials
+      tags: [catalog]
+      summary: List merchant testimonials
+      responses:
+        "200":
+          description: List of testimonials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimonial"
+
+  /leads:
+    post:
+      operationId: createLead
+      tags: [leads]
+      summary: Submit subscription / trial lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeadInput"
+      responses:
+        "201":
+          description: Lead created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+    get:
+      operationId: listLeads
+      tags: [leads]
+      summary: List leads (admin)
+      responses:
+        "200":
+          description: List of leads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lead"
+
+  /contact:
+    post:
+      operationId: createContactMessage
+      tags: [contact]
+      summary: Send contact / complaint message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Message received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactMessage"
+
+  /stats:
+    get:
+      operationId: getStats
+      tags: [stats]
+      summary: Platform-wide stats
+      responses:
+        "200":
+          description: Stats object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        tagline:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        category:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        tools:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - slug
+        - name
+        - tagline
+        - description
+        - icon
+        - category
+        - features
+        - tools
+
+    Plan:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        priceSar:
+          type: integer
+        period:
+          type: string
+        tagline:
+          type: string
+        features:
+          type: array
+          items:
+            type: string
+        highlighted:
+          type: boolean
+        trialDays:
+          type: integer
+      required:
+        - id
+        - name
+        - priceSar
+        - period
+        - tagline
+        - features
+        - highlighted
+        - trialDays
+
+    Testimonial:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        store:
+          type: string
+        message:
+          type: string
+        rating:
+          type: integer
+      required:
+        - id
+        - name
+        - store
+        - message
+        - rating
+
+    Lead:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        storeName:
+          type: string
+        storeUrl:
+          type:
+            - string
+            - "null"
+        planId:
+          type: string
+        serviceId:
+          type:
+            - string
+            - "null"
+        notes:
+          type:
+            - string
+            - "null"
+        startDate:
+          type: string
+        endDate:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - fullName
+        - email
+        - phone
+        - storeName
+        - planId
+        - startDate
+        - endDate
+        - status
+        - createdAt
+
+    LeadInput:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+        email:
+          type: string
+        phone:
+          type: string
+          minLength: 6
+        storeName:
+          type: string
+          minLength: 2
+        storeUrl:
+          type: string
+        planId:
+          type: string
+        serviceId:
+          type: string
+        notes:
+          type: string
+      required:
+        - fullName
+        - email
+        - phone
+        - storeName
+        - planId
+
+    ContactMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type:
+            - string
+            - "null"
+        subject:
+          type: string
+        message:
+          type: string
+        kind:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - email
+        - subject
+        - message
+        - kind
+        - createdAt
+
+    ContactInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+          minLength: 2
+        message:
+          type: string
+          minLength: 5
+        kind:
+          type: string
+          enum: [inquiry, complaint, suggestion, support]
+      required:
+        - name
+        - email
+        - subject
+        - message
+        - kind
+
+    PlatformStats:
+      type: object
+      properties:
+        totalServices:
+          type: integer
+        activeAgents:
+          type: integer
+        totalLeads:
+          type: integer
+        merchantsServed:
+          type: integer
+        avgResponseSeconds:
+          type: integer
+        uptime:
+          type: string
+      required:
+        - totalServices
+        - activeAgents
+        - totalLeads
+        - merchantsServed
+        - avgResponseSeconds
+        - uptime
