@@ -3,7 +3,13 @@ const path = require("path");
 require("dotenv").config();
 
 const app = express();
+const callbackRoutes = require("./callback");
 
+// مهم: قبل الراوتات
+app.use(express.json());
+
+// استخدامه
+app.use("/webhook", callbackRoutes);
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
