@@ -2,9 +2,6 @@ const express = require("express");
 const path = require("path");
 require("dotenv").config();
 
-// مهم للـ proxy
-const { createProxyMiddleware } = require("http-proxy-middleware");
-
 const app = express();
 
 // ======================
@@ -14,44 +11,37 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ======================
-// Salla Webhook
+// Import DB
 // ======================
-app.post("/webhook/salla/callback", (req, res) => {
-  const data = req.body;
+const { users, orders } = require("./db");
 
-  console.log("📦 Salla Callback:");
-  console.log(JSON.stringify(data, null, 2));
+// ======================
+// Routes
+// ======================
+const callbackRoutes = require("./routes/callback");
+app.use("/webhook", callbackRoutes);
 
-  if (data.event === "order.created") {
-    console.log("🛒 New Order:", data.data?.id);
-  }
+// ======================
+// Test API
+// ======================
+app.get("/", (req, res) => {
+  res.send("🚀 LMSAH System Running");
+});
 
-  if (data.event === "order.paid") {
-    console.log("💰 Order Paid:", data.data?.id);
-  }
-
-  res.status(200).json({ success: true });
+app.get("/status", (req, res) => {
+  res.json({ status: "running ✅" });
 });
 
 // ======================
-// API Test
+// Users
 // ======================
-app.get("/api/hello", (req, res) => {
-  res.json({ message: "Hello from LMSAH 🚀" });
+app.get("/users", (req, res) => {
+  res.json(users);
 });
 
 // ======================
-// PROXY (المهم 🔥)
+// Orders by user
 // ======================
-app.use(
-  "/",
-  createProxyMiddleware({
-    target: "https://marketing-agents-hub--rooozahmd4.replit.app/",
-    changeOrigin: true,
-  })
-);
-
-// ======================
-// Export
-// ======================
-module.exports = app;
+app.get("/orders/:userId", (req, res) => {
+  const userOrders = orders.filter(
+    o => o.userId === req
