@@ -19,7 +19,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Routes
 app.get("/api/hello", (req, res) => {
-  res.json({ message: "Hello from server 🚀" });
+ app.get("/", (req, res) => {
+  res.redirect("https://marketing-agents-hub--rooozahmd4.replit.app/");
+});;
 });
 
 // Fallback route
