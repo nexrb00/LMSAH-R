@@ -1,12 +1,15 @@
 {
   "name": "lmsah-system",
   "version": "1.0.0",
+  "description": "LMSAH SaaS Backend System",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node index.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.4.5",
+    "http-proxy-middleware": "^2.0.6"
   }
 }
